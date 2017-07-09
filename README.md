@@ -17,4 +17,4 @@ Installation
 
 License
 -------
-[Here](blob/master/LICENSE)
+[Here](LICENSE)
