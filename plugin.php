@@ -3,7 +3,7 @@
 Plugin Name: YOURLSs Password Protection
 Plugin URI: https://mateoc.net/b_plugin/yourls_PasswordProtection/
 Description: This plugin enables the feature of password protecting your short URLs!
-Version: 1.0
+Version: 1.1
 Author: Matthew
 Author URI: https://mateoc.net/
 */
@@ -22,7 +22,11 @@ function warning_redirection( $args ) {
 		yourls_add_option( 'matthew_pwprotection', 'null' );
 	}
 
-	$matthew_pwprotection_short = str_replace( '/', '', parse_url( $_SERVER[REQUEST_URI], PHP_URL_PATH ) );
+	$matthew_pwprotection_fullurl = ( isset( $_SERVER[ 'HTTPS' ] ) ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	$matthew_pwprotection_urlpath = parse_url( $matthew_pwprotection_fullurl, PHP_URL_PATH );
+	$matthew_pwprotection_pathFragments = explode( '/', $matthew_pwprotection_urlpath );
+	$matthew_pwprotection_short = end( $matthew_pwprotection_pathFragments );
+	
 	$matthew_pwprotection_array = json_decode( $ydb->option[ 'matthew_pwprotection' ], true );
 
 	if( array_key_exists( $matthew_pwprotection_short, $matthew_pwprotection_array ) ){
