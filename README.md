@@ -1,4 +1,4 @@
-YOURLSs Password Protection
+YOURLS Password Protection
 ====================
 
 Plugin for [YOURLS](http://yourls.org) `1.7.2`. 
