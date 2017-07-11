@@ -22,7 +22,7 @@ function warning_redirection( $args ) {
 		yourls_add_option( 'matthew_pwprotection', 'null' );
 	}
 
-	$matthew_pwprotection_fullurl = ( isset( $_SERVER[ 'HTTPS' ] ) ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	$matthew_pwprotection_fullurl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	$matthew_pwprotection_urlpath = parse_url( $matthew_pwprotection_fullurl, PHP_URL_PATH );
 	$matthew_pwprotection_pathFragments = explode( '/', $matthew_pwprotection_urlpath );
 	$matthew_pwprotection_short = end( $matthew_pwprotection_pathFragments );
@@ -125,7 +125,7 @@ function matthew_pwprotection_display_panel() {
 // Function which will draw the admin page
 function matthew_pwprotection_display_page() {
 	global $ydb;
-	if( isset( $_POST[ 'checked' ] ) && isset( $_POST[ 'password' ] ) ) {
+	if( isset( $_POST[ 'checked' ] ) && isset( $_POST[ 'password' ] ) || isset( $_POST[ 'unchecked' ] ) ) {
 		matthew_pwprotection_process_new();
 		matthew_pwprotection_process_display();
 	} else {
@@ -139,7 +139,18 @@ function matthew_pwprotection_display_page() {
 
 // Set/Delete password from DB
 function matthew_pwprotection_process_new() {
-	yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
+	global $ydb;
+	
+	if( isset( $_POST[ 'checked' ] ) ){
+		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
+	}
+	if( isset( $_POST[ 'unchecked' ] ) ){
+		$matthew_pwprotection_array = json_decode( $ydb->option[ 'matthew_pwprotection' ], true ); //Get's array of currently active Password Protected URLs
+		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
+			unset($matthew_pwprotection_array[ matthew_pwprotection_unchecked ]);
+		}
+		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
+	}
 	echo "<p style='color: green'>Success!</p>";
 }
 
@@ -184,15 +195,21 @@ TB;
 		$matthew_pwprotection_array = json_decode( $ydb->option[ 'matthew_pwprotection' ], true ); //Get's array of currently active Password Protected URLs
 		if( strlen( $url ) > 31 ) { //If URL is too long it will shorten it
 			$sURL = substr( $url, 0, 30 ). "...";
+		} else {
+			$sURL = $url;
 		}
 		if( array_key_exists( $short, $matthew_pwprotection_array ) ){ //Check's if URL is currently password protected or not
+			$text = yourls__( "Enable?" );
 			$password = $matthew_pwprotection_array[ $short ];
 			$checked = " checked";
+			$unchecked = '';
 			$style = '';
 			$disabled = '';
 		} else {
-			$password= '';
+			$text = yourls__( "Enable?" );
+			$password = '';
 			$checked = '';
+			$unchecked = ' disabled';
 			$style = 'display: none';
 			$disabled = ' disabled';
 		}
@@ -202,7 +219,8 @@ TB;
 					<td>$short</td>
 					<td><span title="$url">$sURL</span></td>
 					<td>
-						<input type="checkbox" name="checked[$short]" class="matthew_pwprotection_checkbox" value="enable" data-input="$short"$checked> Enabled?
+						<input type="checkbox" name="checked[{$short}]" class="matthew_pwprotection_checkbox" value="enable" data-input="$short"$checked> $text
+						<input type="hidden" name="unchecked[{$short}]" id="{$short}_hidden" value="true"$unchecked>
 						<input id="$short" type="password" name="password[$short]" style="$style" value="$password" placeholder="Password..."$disabled ><br>
 					</td>
 				</tr>
@@ -219,9 +237,14 @@ TABLE;
 			$( dataAttr ).toggle();
 			if( $( dataAttr ).attr( 'disabled' ) ) {
 				$( dataAttr ).removeAttr( 'disabled' );
+				
+				$( dataAttr + "_hidden" ).attr( 'disabled' );
+				$( dataAttr + "_hidden" ).prop('disabled', true);
 			} else {
 				$( dataAttr ).attr( 'disabled' );
-				$( dataAttr ).prop('disabled', true);
+				$( dataAttr ).prop('disabled', true);				
+				
+				$( dataAttr + "_hidden" ).removeAttr( 'disabled' );
 			}
 		});
 	</script>
