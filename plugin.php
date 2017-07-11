@@ -199,7 +199,7 @@ TB;
 					<td><span title="$url">$sURL</span></td>
 					<td>
 						<input type="checkbox" name="checked[$short]" class="matthew_pwprotection_checkbox" value="enable" data-input="$short"$checked> Enabled?
-						<input id="$short" type="text" name="password[$short]" style="$style" value="$password" placeholder="Password..."$disabled ><br>
+						<input id="$short" type="password" name="password[$short]" style="$style" value="$password" placeholder="Password..."$disabled ><br>
 					</td>
 				</tr>
 TABLE;
