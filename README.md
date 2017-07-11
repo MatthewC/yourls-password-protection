@@ -15,6 +15,10 @@ Installation
 3. Configure the plugin ( *eg* `http://sho.rt/admin/plugins.php?page=matthew_pwp` )!
 4. Have fun!
 
+Example
+-------
+![Password Manager Example](https://mateoc.net/b_plugin/yourls_PasswordProtection/yourlsPasswordManager-1.1.gif "Password Manager Example")
+
 License
 -------
 [Here](LICENSE)
