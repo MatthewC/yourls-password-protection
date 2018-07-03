@@ -142,7 +142,7 @@ function matthew_pwprotection_process_new() {
 		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
 	}
 	if( isset( $_POST[ 'unchecked' ] ) ){
-		$matthew_pwprotection_array = yourls_get_option('matthew_pwprotection'); //Get's array of currently active Password Protected URLs
+		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
 		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
 			unset($matthew_pwprotection_array[ matthew_pwprotection_unchecked ]);
 		}
@@ -189,8 +189,8 @@ TB;
 	foreach( $query as $link ) { // Displays all shorturls in the YOURLS DB
 		$short = $link->keyword;
 		$url = $link->url;
-		$matthew_pwprotection_array =  yourls_get_option('matthew_pwprotection'); //Get's array of currently active Password Protected URLs
-		if( strlen( $url ) > 31 ) { //If URL is too long it will shorten it
+		$matthew_pwprotection_array =  json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
+		if( strlen( $url ) > 51 ) { //If URL is too long it will shorten it
 			$sURL = substr( $url, 0, 30 ). "...";
 		} else {
 			$sURL = $url;
