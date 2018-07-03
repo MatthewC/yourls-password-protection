@@ -1,7 +1,7 @@
 YOURLS Password Protection
 ====================
 
-Plugin for [YOURLS](http://yourls.org) `1.7.2`. 
+Plugin for [YOURLS](http://yourls.org) `1.7.3`. 
 
 Description
 -----------
