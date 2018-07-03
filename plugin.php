@@ -3,7 +3,7 @@
 Plugin Name: YOURLSs Password Protection
 Plugin URI: https://mateoc.net/b_plugin/yourls_PasswordProtection/
 Description: This plugin enables the feature of password protecting your short URLs!
-Version: 1.1
+Version: 1.2
 Author: Matthew
 Author URI: https://mateoc.net/
 */
@@ -15,11 +15,14 @@ if( !defined( 'YOURLS_ABSPATH' ) ) die();
 yourls_add_action( 'pre_redirect', 'warning_redirection' );
 
 // Custom function that will be triggered when the event occurs
-function warning_redirection( $args ) {
-	global $ydb;
-
-	if( !isset($ydb->option[ 'matthew_pwprotection' ]) ){
-		yourls_add_option( 'matthew_pwprotection', 'null' );
+function warning_redirection( $args ) {		
+	$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true);
+	if ($matthew_pwprotection_array === false) {
+		yourls_add_option('matthew_pwprotection', 'null');
+		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true);
+		if ($matthew_pwprotection_array === false) {
+			die("Unable to properly enable password protection due to an apparent problem with the database.");
+		}
 	}
 
 	$matthew_pwprotection_fullurl = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -27,8 +30,6 @@ function warning_redirection( $args ) {
 	$matthew_pwprotection_pathFragments = explode( '/', $matthew_pwprotection_urlpath );
 	$matthew_pwprotection_short = end( $matthew_pwprotection_pathFragments );
 	
-	$matthew_pwprotection_array = json_decode( $ydb->option[ 'matthew_pwprotection' ], true );
-
 	if( array_key_exists( $matthew_pwprotection_short, $matthew_pwprotection_array ) ){
 		if( isset( $_POST[ 'password' ] ) && $_POST[ 'password' ] == $matthew_pwprotection_array[ $matthew_pwprotection_short ] ){ //Check if password is submited, and if it matches the DB
 			$url = $args[ 0 ];
@@ -124,28 +125,24 @@ function matthew_pwprotection_display_panel() {
 
 // Function which will draw the admin page
 function matthew_pwprotection_display_page() {
-	global $ydb;
 	if( isset( $_POST[ 'checked' ] ) && isset( $_POST[ 'password' ] ) || isset( $_POST[ 'unchecked' ] ) ) {
 		matthew_pwprotection_process_new();
 		matthew_pwprotection_process_display();
 	} else {
-		if( !isset( $ydb->option[ 'matthew_pwprotection' ] ) ){
+		if(yourls_get_option('matthew_pwprotection') !== false){
 			yourls_add_option( 'matthew_pwprotection', 'null' );
 		}
-
 		matthew_pwprotection_process_display();
 	}
 }
 
 // Set/Delete password from DB
-function matthew_pwprotection_process_new() {
-	global $ydb;
-	
+function matthew_pwprotection_process_new() {	
 	if( isset( $_POST[ 'checked' ] ) ){
 		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
 	}
 	if( isset( $_POST[ 'unchecked' ] ) ){
-		$matthew_pwprotection_array = json_decode( $ydb->option[ 'matthew_pwprotection' ], true ); //Get's array of currently active Password Protected URLs
+		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
 		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
 			unset($matthew_pwprotection_array[ matthew_pwprotection_unchecked ]);
 		}
@@ -192,8 +189,8 @@ TB;
 	foreach( $query as $link ) { // Displays all shorturls in the YOURLS DB
 		$short = $link->keyword;
 		$url = $link->url;
-		$matthew_pwprotection_array = json_decode( $ydb->option[ 'matthew_pwprotection' ], true ); //Get's array of currently active Password Protected URLs
-		if( strlen( $url ) > 31 ) { //If URL is too long it will shorten it
+		$matthew_pwprotection_array =  json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
+		if( strlen( $url ) > 51 ) { //If URL is too long it will shorten it
 			$sURL = substr( $url, 0, 30 ). "...";
 		} else {
 			$sURL = $url;
