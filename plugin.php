@@ -3,7 +3,7 @@
 Plugin Name: YOURLSs Password Protection
 Plugin URI: https://mateoc.net/b_plugin/yourls_PasswordProtection/
 Description: This plugin enables the feature of password protecting your short URLs!
-Version: 1.2
+Version: 1.3
 Author: Matthew
 Author URI: https://mateoc.net/
 */
@@ -43,74 +43,139 @@ function warning_redirection( $args ) {
 			$matthew_submit = yourls__( "Send!"                                       , "matthew_pwp" ); //Translate the Submit button
 			//Displays main "Insert Password" area
 			echo <<<PWP
-			<style>
-				#password {
-					background-color: #e8e8e8;
-					box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;
+			<html>
+				<head>
+					<title>Redirection Notice</title>
+					<style>
+						@import url(https://weloveiconfonts.com/api/?family=fontawesome);
+						@import url(https://meyerweb.com/eric/tools/css/reset/reset.css);
+						[class*="fontawesome-"]:before {
+						  font-family: 'FontAwesome', sans-serif;
+						}
+						* {
+						  -moz-box-sizing: border-box;
+							   box-sizing: border-box;
+						}
+						*:before, *:after {
+						  -moz-box-sizing: border-box;
+							   box-sizing: border-box;
+						}
 
-					width: 400px !important;
-					height: 220px !important;
+						body {
+						  background: #2c3338;
+						  color: #606468;
+						  font: 87.5%/1.5em 'Open Sans', sans-serif;
+						  margin: 0;
+						}
 
-					position: fixed;
-					top: 50%;
-					left: 50%;
-					/* bring your own prefixes */
-					transform: translate(-50%, -50%);
-				}
+						a {
+						  color: #eee;
+						  text-decoration: none;
+						}
 
-				#password form {
-					margin-top: 30px;
-					margin-left: 14px;
-					width: 95%;
-					height: 20px;
-				}
+						a:hover {
+						  text-decoration: underline;
+						}
 
-				#password input[type="password"]{
-					box-sizing: border-box;
-					border-radius: 4px;
-					margin-left: 14px;
-					padding: 10px;
-					border: none;
-					height: 30px;
-					width: 84%;
-					/* background-color: #3CBC8D;
-					color: white; */
-				}
+						input {
+						  border: none;
+						  font-family: 'Open Sans', Arial, sans-serif;
+						  font-size: 14px;
+						  line-height: 1.5em;
+						  padding: 0;
+						  -webkit-appearance: none;
+						}
 
-				#password input[type="password"]:focus{
-					outline: none;
-					background-color: inherit;
-				}
+						p {
+						  line-height: 1.5em;
+						}
 
-				#password input[type="submit"]{
-					box-sizing: border-box;
-					border-radius: 4px;
-					margin-left: 14px;
-					border: none;
-					height: 30px;
-					width: 84%;
+						.clearfix {
+						  *zoom: 1;
+						}
+						.clearfix:before, .clearfix:after {
+						  content: ' ';
+						  display: table;
+						}
+						.clearfix:after {
+						  clear: both;
+						}
 
-					background-color: lightgrey;
-					outline: aqua !important;
-					outline-color: grey;
-				}
-				#password input[type="submit"]:focus{
-					box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19) !important;
-					background-color: inherit;
-					outline: aqua !important;
-					outline-color: red;
-				}
-			</style>
-			<div id="password">
-				<center>
-					<br><span style="font-size: 35px;"><u>$matthew_ppu</u></span>$error
-				</center>
-				<form method="post">
-					<p><i>$matthew_sm</i></p>
-					<input type="password" name="password" placeholder="$matthew_ph"><br><br>
-					<input type="submit" value="$matthew_submit"><br><br>
-				</form>
-			</div>
+						.container {
+						  left: 50%;
+						  position: fixed;
+						  top: 50%;
+						  -webkit-transform: translate(-50%, -50%);
+							  -ms-transform: translate(-50%, -50%);
+								  transform: translate(-50%, -50%);
+						}
+						#login {
+						  width: 280px;
+						}
+
+						#login form span {
+						  background-color: #363b41;
+						  border-radius: 3px 0px 0px 3px;
+						  color: #606468;
+						  display: block;
+						  float: left;
+						  height: 50px;
+						  line-height: 50px;
+						  text-align: center;
+						  width: 50px;
+						}
+
+						#login form input {
+						  height: 50px;
+						}
+
+						#login form input[type="text"], input[type="password"] {
+						  background-color: #3b4148;
+						  border-radius: 0px 3px 3px 0px;
+						  color: #606468;
+						  margin-bottom: 1em;
+						  padding: 0 16px;
+						  width: 230px;
+						}
+
+						#login form input[type="submit"] {
+						  border-radius: 3px;
+						  -moz-border-radius: 3px;
+						  -webkit-border-radius: 3px;
+						  background-color: #ea4c88;
+						  color: #eee;
+						  font-weight: bold;
+						  margin-bottom: 2em;
+						  text-transform: uppercase;
+						  width: 280px;
+						}
+
+						#login form input[type="submit"]:hover {
+						  background-color: #d44179;
+						}
+
+						#login > p {
+						  text-align: center;
+						}
+
+						#login > p span {
+						  padding-left: 5px;
+						}
+					</style>
+				</head>
+				<body>
+					<div class="container">
+						<div id="login">
+							<form method="post">
+								<fieldset class="clearfix">
+									<p><span class="fontawesome-lock"></span><input type="password" name="password" value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p>
+									<p><input type="submit" value="$matthew_submit"></p>
+								</fieldset>
+							</form>
+						</div>
+					</div>
+				</body>
+		</html>
 PWP;
 			die();
 		}
