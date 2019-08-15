@@ -36,7 +36,7 @@ function warning_redirection( $args ) {
 			header("Location: $url"); //Redirects client
 			die();
 		} else {
-			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\") " : "");
+			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\")</script>" : "");
 			$matthew_ppu =    yourls__( "Password Protected URL",                       "matthew_pwp" ); //Translate Password Title
 			$matthew_ph =     yourls__( "Password"                                    , "matthew_pwp" ); //Translate the word Password
 			$matthew_sm =     yourls__( "Please enter the password below to continue.", "matthew_pwp" ); //Translate the main message
@@ -175,12 +175,13 @@ function warning_redirection( $args ) {
 						<div id="login">
 							<form method="post">
 								<fieldset class="clearfix">
-									<p><span class="fontawesome-lock"></span><input type="password" name="password" value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required>$error</p>
+									<p><span class="fontawesome-lock"></span><input type="password" name="password" value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p>
 									<p><input type="submit" value="$matthew_submit"></p>
 								</fieldset>
 							</form>
 						</div>
 					</div>
+					$error
 				</body>
 		</html>
 PWP;
