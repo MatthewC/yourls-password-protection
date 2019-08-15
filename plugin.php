@@ -36,7 +36,7 @@ function warning_redirection( $args ) {
 			header("Location: $url"); //Redirects client
 			die();
 		} else {
-			$error = ( isset( $_POST[ 'password' ] ) ? "\n<br><span style='color: red;'><u>". yourls__( "Incorrect Password", "matthew_pwp" ). "</u></span>" : "");
+			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\") " : "");
 			$matthew_ppu =    yourls__( "Password Protected URL",                       "matthew_pwp" ); //Translate Password Title
 			$matthew_ph =     yourls__( "Password"                                    , "matthew_pwp" ); //Translate the word Password
 			$matthew_sm =     yourls__( "Please enter the password below to continue.", "matthew_pwp" ); //Translate the main message
@@ -162,6 +162,13 @@ function warning_redirection( $args ) {
 						  padding-left: 5px;
 						}
 					</style>
+					<!-- JavaScript -->
+					<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.11.4/build/alertify.min.js"></script>
+
+					<!-- CSS -->
+					<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.4/build/css/alertify.min.css"/>
+					<!-- Default theme -->
+					<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.11.4/build/css/themes/default.min.css"/>
 				</head>
 				<body>
 					<div class="container">
