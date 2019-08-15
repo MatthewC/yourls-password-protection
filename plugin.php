@@ -168,7 +168,7 @@ function warning_redirection( $args ) {
 						<div id="login">
 							<form method="post">
 								<fieldset class="clearfix">
-									<p><span class="fontawesome-lock"></span><input type="password" name="password" value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p>
+									<p><span class="fontawesome-lock"></span><input type="password" name="password" value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required>$error</p>
 									<p><input type="submit" value="$matthew_submit"></p>
 								</fieldset>
 							</form>
