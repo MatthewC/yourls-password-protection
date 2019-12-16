@@ -5,7 +5,7 @@ Plugin for [YOURLS](http://yourls.org) `1.7.3`.
 
 Description
 -----------
-The *Password Protection* Plugin will give you the ability to password protect any Short URL you want ( *Passwords are set individually* )! The plugin will promt the user for a password before redircting them!
+The *Password Protection* Plugin will give you the ability to password protect any Short URL you want (*Passwords are set individually*)! The plugin will promt the user for a password before redircting them!
 
 Installation
 ------------
