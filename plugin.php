@@ -15,7 +15,7 @@ if( !defined( 'YOURLS_ABSPATH' ) ) die();
 yourls_add_action( 'pre_redirect', 'warning_redirection' );
 
 // Custom function that will be triggered when the event occurs
-function warning_redirection( $args ) {		
+function warning_redirection( $args ) {
 	$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true);
 	if ($matthew_pwprotection_array === false) {
 		yourls_add_option('matthew_pwprotection', 'null');
@@ -29,8 +29,8 @@ function warning_redirection( $args ) {
 	$matthew_pwprotection_urlpath = parse_url( $matthew_pwprotection_fullurl, PHP_URL_PATH );
 	$matthew_pwprotection_pathFragments = explode( '/', $matthew_pwprotection_urlpath );
 	$matthew_pwprotection_short = end( $matthew_pwprotection_pathFragments );
-	
-	if( array_key_exists( $matthew_pwprotection_short, $matthew_pwprotection_array ) ){
+
+	if( array_key_exists( $matthew_pwprotection_short, (array)$matthew_pwprotection_array ) ){
 		if( isset( $_POST[ 'password' ] ) && $_POST[ 'password' ] == $matthew_pwprotection_array[ $matthew_pwprotection_short ] ){ //Check if password is submited, and if it matches the DB
 			$url = $args[ 0 ];
 			header("Location: $url"); //Redirects client
@@ -210,14 +210,14 @@ function matthew_pwprotection_display_page() {
 }
 
 // Set/Delete password from DB
-function matthew_pwprotection_process_new() {	
+function matthew_pwprotection_process_new() {
 	if( isset( $_POST[ 'checked' ] ) ){
 		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
 	}
 	if( isset( $_POST[ 'unchecked' ] ) ){
 		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
 		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
-			unset($matthew_pwprotection_array[ matthew_pwprotection_unchecked ]);
+			unset($matthew_pwprotection_array[ $matthew_pwprotection_unchecked ]);
 		}
 		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
 	}
@@ -268,7 +268,7 @@ TB;
 		} else {
 			$sURL = $url;
 		}
-		if( array_key_exists( $short, $matthew_pwprotection_array ) ){ //Check's if URL is currently password protected or not
+		if( array_key_exists( $short, (array)$matthew_pwprotection_array ) ){ //Check's if URL is currently password protected or not
 			$text = yourls__( "Enable?" );
 			$password = $matthew_pwprotection_array[ $short ];
 			$checked = " checked";
@@ -307,13 +307,13 @@ TABLE;
 			$( dataAttr ).toggle();
 			if( $( dataAttr ).attr( 'disabled' ) ) {
 				$( dataAttr ).removeAttr( 'disabled' );
-				
+
 				$( dataAttr + "_hidden" ).attr( 'disabled' );
 				$( dataAttr + "_hidden" ).prop('disabled', true);
 			} else {
 				$( dataAttr ).attr( 'disabled' );
-				$( dataAttr ).prop('disabled', true);				
-				
+				$( dataAttr ).prop('disabled', true);
+
 				$( dataAttr + "_hidden" ).removeAttr( 'disabled' );
 			}
 		});
