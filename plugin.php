@@ -33,8 +33,8 @@ function warning_redirection( $args ) {
 	if( array_key_exists( $matthew_pwprotection_short, (array)$matthew_pwprotection_array ) ){
 		if( isset( $_POST[ 'password' ] ) && $_POST[ 'password' ] == $matthew_pwprotection_array[ $matthew_pwprotection_short ] ){ //Check if password is submited, and if it matches the DB
 			$url = $args[ 0 ];
-			header("Location: $url"); //Redirects client
-			die();
+			echo "<script type='text/javascript'> document.location = '$url'; </script>";
+			exit();
 		} else {
 			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\")</script>" : "");
 			$matthew_ppu =    yourls__( "Password Protected URL",                       "matthew_pwp" ); //Translate Password Title
