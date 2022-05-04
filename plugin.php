@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: YOURLSs Password Protection
-Plugin URI: https://mateoc.net/b_plugin/yourls_PasswordProtection/
+Plugin URI: https://matc.io/yourls-password
 Description: This plugin enables the feature of password protecting your short URLs!
-Version: 1.3
+Version: 1.4
 Author: Matthew
-Author URI: https://mateoc.net/
+Author URI: https://matc.io
 */
 
 // No direct call
@@ -217,6 +217,7 @@ function matthew_pwprotection_process_new() {
 	if( isset( $_POST[ 'unchecked' ] ) ){
 		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
 		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
+			$matthew_pwprotection_array[ $matthew_pwprotection_unchecked ] = "";
 			unset($matthew_pwprotection_array[ $matthew_pwprotection_unchecked ]);
 		}
 		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
