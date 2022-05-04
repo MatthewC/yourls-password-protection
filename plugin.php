@@ -227,7 +227,7 @@ function matthew_pwprotection_process_new() {
 
 //Display Form
 function matthew_pwprotection_process_display() {
-	global $ydb;
+	$ydb = yourls_get_db();
 
 	$table = YOURLS_DB_TABLE_URL;
 	$sql = "SELECT * FROM `$table` WHERE 1=1";
@@ -261,6 +261,7 @@ function matthew_pwprotection_process_display() {
 					<th>$matthew_pw</th>
 				</tr>
 TB;
+var_dump($query);
 	foreach( $query as $link ) { // Displays all shorturls in the YOURLS DB
 		$short = $link->keyword;
 		$url = $link->url;
