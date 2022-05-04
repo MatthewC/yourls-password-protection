@@ -31,9 +31,13 @@ function warning_redirection( $args ) {
 	$matthew_pwprotection_short = end( $matthew_pwprotection_pathFragments );
 
 	if( array_key_exists( $matthew_pwprotection_short, (array)$matthew_pwprotection_array ) ){
-		if( isset( $_POST[ 'password' ] ) && $_POST[ 'password' ] == $matthew_pwprotection_array[ $matthew_pwprotection_short ] ){ // Check if password is submited, and if it matches the DB
+		// Check if password is submited, and if it matches the DB
+		if( isset( $_POST[ 'password' ] ) && password_verify( $_POST[ 'password' ], $matthew_pwprotection_array[ $matthew_pwprotection_short ]) ){
 			$url = $args[ 0 ];
-			header("Location: $url"); //Redirects client
+			
+			// Redirect client
+			header("Location: $url");
+			
 			die();
 		} else {
 			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\")</script>" : "");
@@ -214,18 +218,15 @@ function matthew_pwprotection_process_new() {
 	// Verify nonce token.
 	yourls_verify_nonce( "matthew_pwprotection_update" );
 
-	if( isset( $_POST[ 'checked' ] ) ){
-		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
-	}
-	if( isset( $_POST[ 'unchecked' ] ) ){
-		// Get array of currently active Password Protected URLs
-		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true);
-		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
-			$matthew_pwprotection_array[ $matthew_pwprotection_unchecked ] = "";
-			unset($matthew_pwprotection_array[ $matthew_pwprotection_unchecked ]);
+	foreach( $_POST[ 'password' ] as $url => $url_password) {
+		if($url_password != "DONOTCHANGE") {
+			$_POST[ 'password' ][ $url ] = password_hash($url_password, PASSWORD_BCRYPT);
 		}
-		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
 	}
+
+	// Update database
+	yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
+	
 	echo "<p style='color: green'>Success!</p>";
 }
 
@@ -280,7 +281,7 @@ TB;
 		}
 		if( array_key_exists( $short, (array)$matthew_pwprotection_array ) ){ // Check if URL is currently password protected or not
 			$text = yourls__( "Enable?" );
-			$password = $matthew_pwprotection_array[ $short ];
+			$password = "DONOTCHANGE";
 			$checked = " checked";
 			$unchecked = '';
 			$style = '';
