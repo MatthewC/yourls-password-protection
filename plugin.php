@@ -230,7 +230,8 @@ function matthew_pwprotection_process_display() {
 	global $ydb;
 
 	$table = YOURLS_DB_TABLE_URL;
-	$query = $ydb->get_results( "SELECT * FROM `$table` WHERE 1=1" );
+	$sql = "SELECT * FROM `$table` WHERE 1=1";
+	$query = $ydb->fetchAll( $sql );
 
 	$matthew_su = yourls__( "Short URL"   , "matthew_pwp" ); //Translate "Short URL"
 	$matthew_ou = yourls__( "Original URL", "matthew_pwp" ); //Translate "Original URL"
