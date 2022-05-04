@@ -31,17 +31,17 @@ function warning_redirection( $args ) {
 	$matthew_pwprotection_short = end( $matthew_pwprotection_pathFragments );
 
 	if( array_key_exists( $matthew_pwprotection_short, (array)$matthew_pwprotection_array ) ){
-		if( isset( $_POST[ 'password' ] ) && $_POST[ 'password' ] == $matthew_pwprotection_array[ $matthew_pwprotection_short ] ){ //Check if password is submited, and if it matches the DB
+		if( isset( $_POST[ 'password' ] ) && $_POST[ 'password' ] == $matthew_pwprotection_array[ $matthew_pwprotection_short ] ){ // Check if password is submited, and if it matches the DB
 			$url = $args[ 0 ];
 			header("Location: $url"); //Redirects client
 			die();
 		} else {
 			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\")</script>" : "");
-			$matthew_ppu =    yourls__( "Password Protected URL",                       "matthew_pwp" ); //Translate Password Title
-			$matthew_ph =     yourls__( "Password"                                    , "matthew_pwp" ); //Translate the word Password
-			$matthew_sm =     yourls__( "Please enter the password below to continue.", "matthew_pwp" ); //Translate the main message
-			$matthew_submit = yourls__( "Send!"                                       , "matthew_pwp" ); //Translate the Submit button
-			//Displays main "Insert Password" area
+			$matthew_ppu =    yourls__( "Password Protected URL",                       "matthew_pwp" ); // Translate Password Title
+			$matthew_ph =     yourls__( "Password"                                    , "matthew_pwp" ); // Translate the word Password
+			$matthew_sm =     yourls__( "Please enter the password below to continue.", "matthew_pwp" ); // Translate the main message
+			$matthew_submit = yourls__( "Send!"                                       , "matthew_pwp" ); // Translate the Submit button
+			// Displays main "Insert Password" area
 			echo <<<PWP
 			<html>
 				<head>
@@ -211,11 +211,15 @@ function matthew_pwprotection_display_page() {
 
 // Set/Delete password from DB
 function matthew_pwprotection_process_new() {
+	// Verify nonce token.
+	yourls_verify_nonce( "matthew_pwprotection_update" );
+
 	if( isset( $_POST[ 'checked' ] ) ){
 		yourls_update_option( 'matthew_pwprotection', json_encode( $_POST[ 'password' ] ) );
 	}
 	if( isset( $_POST[ 'unchecked' ] ) ){
-		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
+		// Get array of currently active Password Protected URLs
+		$matthew_pwprotection_array = json_decode(yourls_get_option('matthew_pwprotection'), true);
 		foreach ( $_POST[ 'unchecked' ] as $matthew_pwprotection_unchecked ){
 			$matthew_pwprotection_array[ $matthew_pwprotection_unchecked ] = "";
 			unset($matthew_pwprotection_array[ $matthew_pwprotection_unchecked ]);
@@ -225,7 +229,7 @@ function matthew_pwprotection_process_new() {
 	echo "<p style='color: green'>Success!</p>";
 }
 
-//Display Form
+// Display Form
 function matthew_pwprotection_process_display() {
 	$ydb = yourls_get_db();
 
@@ -233,9 +237,12 @@ function matthew_pwprotection_process_display() {
 	$sql = "SELECT * FROM `$table` WHERE 1=1";
 	$query = $ydb->fetchAll( $sql );
 
-	$matthew_su = yourls__( "Short URL"   , "matthew_pwp" ); //Translate "Short URL"
-	$matthew_ou = yourls__( "Original URL", "matthew_pwp" ); //Translate "Original URL"
-	$matthew_pw = yourls__( "Password"    , "matthew_pwp" ); //Translate "Password"
+	$matthew_su = yourls__( "Short URL"   , "matthew_pwp" ); // Translate "Short URL"
+	$matthew_ou = yourls__( "Original URL", "matthew_pwp" ); // Translate "Original URL"
+	$matthew_pw = yourls__( "Password"    , "matthew_pwp" ); // Translate "Password"
+
+	// Protect action with nonce
+	$matthew_pwprotection_noncefield = yourls_nonce_field( "matthew_pwprotection_update" );
 
 	echo <<<TB
 	<style>
@@ -261,17 +268,17 @@ function matthew_pwprotection_process_display() {
 					<th>$matthew_pw</th>
 				</tr>
 TB;
-var_dump($query);
+
 	foreach( $query as $link ) { // Displays all shorturls in the YOURLS DB
-		$short = $link->keyword;
-		$url = $link->url;
-		$matthew_pwprotection_array =  json_decode(yourls_get_option('matthew_pwprotection'), true); //Get's array of currently active Password Protected URLs
-		if( strlen( $url ) > 51 ) { //If URL is too long it will shorten it
+		$short = $link["keyword"];
+		$url = $link["url"];
+		$matthew_pwprotection_array =  json_decode(yourls_get_option('matthew_pwprotection'), true); // Get array of currently active Password Protected URLs
+		if( strlen( $url ) > 51 ) { // If URL is too long, shorten it with '...'
 			$sURL = substr( $url, 0, 30 ). "...";
 		} else {
 			$sURL = $url;
 		}
-		if( array_key_exists( $short, (array)$matthew_pwprotection_array ) ){ //Check's if URL is currently password protected or not
+		if( array_key_exists( $short, (array)$matthew_pwprotection_array ) ){ // Check if URL is currently password protected or not
 			$text = yourls__( "Enable?" );
 			$password = $matthew_pwprotection_array[ $short ];
 			$checked = " checked";
@@ -301,6 +308,7 @@ TABLE;
 	}
 	echo <<<END
 			</table>
+			$matthew_pwprotection_noncefield
 			<input type="submit" value="Submit">
 		</form>
 	</div>
