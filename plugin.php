@@ -37,7 +37,7 @@ function warning_redirection( $args ) {
 			
 			// Redirect client
 			header("Location: $url");
-			
+
 			die();
 		} else {
 			$error = ( isset( $_POST[ 'password' ] ) ? "<script>alertify.error(\"Incorrect Password, try again\")</script>" : "");
@@ -218,9 +218,13 @@ function matthew_pwprotection_process_new() {
 	// Verify nonce token.
 	yourls_verify_nonce( "matthew_pwprotection_update" );
 
+	$matthew_pwprotection_array =  json_decode(yourls_get_option('matthew_pwprotection'), true);
+
 	foreach( $_POST[ 'password' ] as $url => $url_password) {
 		if($url_password != "DONOTCHANGE") {
 			$_POST[ 'password' ][ $url ] = password_hash($url_password, PASSWORD_BCRYPT);
+		} else {
+			$_POST[ 'password' ][ $url ] = $matthew_pwprotection_array[ $url ];
 		}
 	}
 
