@@ -221,7 +221,7 @@ function matthew_pwprotection_process_new() {
 	$matthew_pwprotection_array =  json_decode(yourls_get_option('matthew_pwprotection'), true);
 
 	foreach( $_POST[ 'password' ] as $url => $url_password) {
-		if($url_password != "DONOTCHANGE") {
+		if($url_password != "DONOTCHANGE_8fggwrFrRXvqndzw") {
 			$_POST[ 'password' ][ $url ] = password_hash($url_password, PASSWORD_BCRYPT);
 		} else {
 			$_POST[ 'password' ][ $url ] = $matthew_pwprotection_array[ $url ];
@@ -285,7 +285,7 @@ TB;
 		}
 		if( array_key_exists( $short, (array)$matthew_pwprotection_array ) ){ // Check if URL is currently password protected or not
 			$text = yourls__( "Enable?" );
-			$password = "DONOTCHANGE";
+			$password = "DONOTCHANGE_8fggwrFrRXvqndzw";
 			$checked = " checked";
 			$unchecked = '';
 			$style = '';
