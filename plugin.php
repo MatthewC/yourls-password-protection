@@ -250,12 +250,21 @@ function matthew_pwprotection_process_display() {
 		$offset = ((int)$offset - 1) * $limit;
 	}
 
-	$table = YOURLS_DB_TABLE_URL;
-	$sql = "SELECT * FROM `$table` WHERE 1=1 LIMIT :limit OFFSET :offset";
+	$where = '1=1';
 	$binds = array(
 		'limit'=> $limit,
 		'offset'=> $offset,
 	);
+
+	$short_url_to_filter = @$_GET['q'];
+	if ($short_url_to_filter != NULL){
+		$where = 'keyword LIKE :keyword';
+		$binds['keyword'] = '%'.$short_url_to_filter.'%';
+	}
+
+	$table = YOURLS_DB_TABLE_URL;
+	$sql = "SELECT * FROM `$table` WHERE $where LIMIT :limit OFFSET :offset";
+	
 	$query = $ydb->fetchAll($sql, $binds);
 
 	$matthew_su = yourls__( "Short URL"   , "matthew_pwp" ); // Translate "Short URL"
@@ -281,7 +290,10 @@ function matthew_pwprotection_process_display() {
 	tr:nth-child(odd){background-color: #fff}
 	</style>
 	<div style="overflow-x:auto;">
-		<form method="post">
+		<form method="post" id="form_submit">
+		<label>Search Short URL:</label>
+		<input type="text" id="txt_search" size="20">
+		<input id="btn_search" type="button" value="Search">
 			<table>
 				<tr>
 					<th>$matthew_su</th>
@@ -322,7 +334,7 @@ TB;
 					<td>
 						<input type="checkbox" name="checked[{$short}]" class="matthew_pwprotection_checkbox" value="enable" data-input="$short"$checked> $text
 						<input type="hidden" name="unchecked[{$short}]" id="{$short}_hidden" value="true"$unchecked>
-						<input id="$short" type="password" name="password[$short]" style="$style" value="$password" placeholder="Password..."$disabled ><br>
+						<input id="$short" type="password" name="password[$short]" style="$style" value="$password" onkeypress="return checkIfSubmitPassword(event);" placeholder="Password..."$disabled ><br>
 					</td>
 				</tr>
 TABLE;
@@ -338,10 +350,34 @@ TABLE;
 			$matthew_pwprotection_noncefield
 			<input id="btn_previous" type="button" value="Previous">
 			<input id="btn_next" type="button" value="Next">
-			<p><input type="submit" value="Submit"></p>
+			<p><input id="btn_submit" type="button" value="Submit"></p>
 		</form>
 	</div>
 	<script>
+		$("#txt_search").val("$short_url_to_filter");
+		$("#txt_search").focus();
+
+		function filterShortURL(){
+			let shortURLToFind = $("#txt_search").val();
+			if (window.location.href.includes("&q=")){
+				window.location.href = window.location.href.replace("&q=$short_url_to_filter", "&q="+shortURLToFind);
+			}else{
+				window.location.href += "&q="+shortURLToFind;
+			}
+		}
+
+		function formSubmit(){
+			$('#form_submit').submit();
+		}
+
+		function checkIfSubmitPassword(e) {
+			e = e || window.event;
+			if (e.which === 13) {
+				formSubmit()
+			}
+			return true;
+		}
+
 		$(document).ready(function(){
 			let total_data = $total_data;
 			let current_page = $current_page;
@@ -375,6 +411,23 @@ TABLE;
 					window.location.href = window.location.href.replace( "&p=$current_page", "&p=$next_page" );
 				}
 			});
+
+			$( "#btn_search" ).click(function() {
+				filterShortURL();
+			});
+
+			$( "#txt_search" ).on('keypress',function(e) {
+				if(e.which === 13) {
+					e.preventDefault();
+					filterShortURL();
+					e.stopPropagation();
+				}
+			});
+
+			$( "#btn_submit" ).click(function() {
+				formSubmit();
+			});
+			
 
 			// go to previus page when not data
 			if (current_page > 1 && total_data == 0){
