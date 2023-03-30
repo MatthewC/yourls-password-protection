@@ -251,8 +251,12 @@ function matthew_pwprotection_process_display() {
 	}
 
 	$table = YOURLS_DB_TABLE_URL;
-	$sql = "SELECT * FROM `$table` WHERE 1=1 LIMIT $limit OFFSET $offset";
-	$query = $ydb->fetchAll( $sql );
+	$sql = "SELECT * FROM `$table` WHERE 1=1 LIMIT :limit OFFSET :offset";
+	$binds = array(
+		'limit'=> $limit,
+		'offset'=> $offset,
+	);
+	$query = $ydb->fetchAll($sql, $binds);
 
 	$matthew_su = yourls__( "Short URL"   , "matthew_pwp" ); // Translate "Short URL"
 	$matthew_ou = yourls__( "Original URL", "matthew_pwp" ); // Translate "Original URL"
@@ -328,7 +332,7 @@ TABLE;
 	$previous_page = $current_page-1;
 	$next_page = $current_page+1;
 	$total_data = count($query);
-	
+
 	echo <<<END
 			</table>
 			$matthew_pwprotection_noncefield
