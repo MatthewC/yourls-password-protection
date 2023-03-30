@@ -238,8 +238,20 @@ function matthew_pwprotection_process_new() {
 function matthew_pwprotection_process_display() {
 	$ydb = yourls_get_db();
 
+	// get limit and offset for pagination
+	$limit = 50;
+	$offset = @$_GET['p'];
+	if ($offset == NULL){
+		$offset = 0;
+	}else{
+		if ((int)$offset < 0){
+			$offset = 1;
+		}
+		$offset = ((int)$offset - 1) * $limit;
+	}
+
 	$table = YOURLS_DB_TABLE_URL;
-	$sql = "SELECT * FROM `$table` WHERE 1=1";
+	$sql = "SELECT * FROM `$table` WHERE 1=1 LIMIT $limit OFFSET $offset";
 	$query = $ydb->fetchAll( $sql );
 
 	$matthew_su = yourls__( "Short URL"   , "matthew_pwp" ); // Translate "Short URL"
@@ -311,26 +323,58 @@ TB;
 				</tr>
 TABLE;
 	}
+
+	$current_page = $offset/$limit+1;
+	$previous_page = $current_page-1;
+	$next_page = $current_page+1;
+	$total_data = count($query);
+	
 	echo <<<END
 			</table>
 			$matthew_pwprotection_noncefield
-			<input type="submit" value="Submit">
+			<input id="btn_previous" type="button" value="Previous">
+			<input id="btn_next" type="button" value="Next">
+			<p><input type="submit" value="Submit"></p>
 		</form>
 	</div>
 	<script>
-		$( ".matthew_pwprotection_checkbox" ).click(function() {
-			var dataAttr = "#" + this.dataset.input;
-			$( dataAttr ).toggle();
-			if( $( dataAttr ).attr( 'disabled' ) ) {
-				$( dataAttr ).removeAttr( 'disabled' );
+		$(document).ready(function(){
+			let total_data = $total_data;
+			let current_page = $current_page;
 
-				$( dataAttr + "_hidden" ).attr( 'disabled' );
-				$( dataAttr + "_hidden" ).prop('disabled', true);
-			} else {
-				$( dataAttr ).attr( 'disabled' );
-				$( dataAttr ).prop('disabled', true);
+			$( ".matthew_pwprotection_checkbox" ).click(function() {
+				var dataAttr = "#" + this.dataset.input;
+				$( dataAttr ).toggle();
+				if( $( dataAttr ).attr( 'disabled' ) ) {
+					$( dataAttr ).removeAttr( 'disabled' );
 
-				$( dataAttr + "_hidden" ).removeAttr( 'disabled' );
+					$( dataAttr + "_hidden" ).attr( 'disabled' );
+					$( dataAttr + "_hidden" ).prop('disabled', true);
+				} else {
+					$( dataAttr ).attr( 'disabled' );
+					$( dataAttr ).prop('disabled', true);
+
+					$( dataAttr + "_hidden" ).removeAttr( 'disabled' );
+				}
+			});
+
+			$( "#btn_previous" ).click(function() {
+				if (current_page > 1 && window.location.href.endsWith("&p=$current_page")){
+					window.location.href = window.location.href.replace( "&p=$current_page", "&p=$previous_page" );
+				}
+			});
+
+			$( "#btn_next" ).click(function() {
+				if (window.location.href.endsWith("matthew_pwp")){
+					window.location.href += "&p=$next_page";
+				}else{
+					window.location.href = window.location.href.replace( "&p=$current_page", "&p=$next_page" );
+				}
+			});
+
+			// go to previus page when not data
+			if (current_page > 1 && total_data == 0){
+				$("#btn_previous").trigger("click");
 			}
 		});
 	</script>
