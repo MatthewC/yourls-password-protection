@@ -257,7 +257,7 @@ function matthew_pwprotection_process_display() {
 	);
 
 	$short_url_to_filter = @$_GET['q'];
-	if ($short_url_to_filter != NULL){
+	if ($short_url_to_filter != NULL && strlen($short_url_to_filter)>0){
 		$where = 'keyword LIKE :keyword';
 		$binds['keyword'] = '%'.$short_url_to_filter.'%';
 	}
@@ -358,9 +358,11 @@ TABLE;
 		$("#txt_search").focus();
 
 		function filterShortURL(){
+			var current_url = window.location.href;
+			current_url = current_url.replace(/\&p\=\d+/, "");
 			let shortURLToFind = $("#txt_search").val();
-			if (window.location.href.includes("&q=")){
-				window.location.href = window.location.href.replace("&q=$short_url_to_filter", "&q="+shortURLToFind);
+			if (current_url.includes("&q=")){
+				window.location.href = current_url.replace("&q=$short_url_to_filter", "&q="+shortURLToFind);
 			}else{
 				window.location.href += "&q="+shortURLToFind;
 			}
@@ -399,16 +401,16 @@ TABLE;
 			});
 
 			$( "#btn_previous" ).click(function() {
-				if (current_page > 1 && window.location.href.endsWith("&p=$current_page")){
+				if (current_page > 1 && window.location.href.includes("&p=$current_page")){
 					window.location.href = window.location.href.replace( "&p=$current_page", "&p=$previous_page" );
 				}
 			});
 
 			$( "#btn_next" ).click(function() {
-				if (window.location.href.endsWith("matthew_pwp")){
-					window.location.href += "&p=$next_page";
-				}else{
+				if (window.location.href.includes("&p=")){
 					window.location.href = window.location.href.replace( "&p=$current_page", "&p=$next_page" );
+				}else{
+					window.location.href += "&p=$next_page";
 				}
 			});
 
