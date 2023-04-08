@@ -3,7 +3,7 @@
 Plugin Name: YOURLSs Password Protection
 Plugin URI: https://matc.io/yourls-password
 Description: This plugin enables the feature of password protecting your short URLs!
-Version: 1.4
+Version: 1.5
 Author: Matthew
 Author URI: https://matc.io
 */
